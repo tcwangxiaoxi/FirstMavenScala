@@ -8,7 +8,7 @@ import java.util.concurrent.{Callable, Executors}
 object TestFuture {
   def main(args: Array[String]): Unit = {
 
-    val String = "王晓茜"
+//    val String = "王晓茜"
 
     val byteArray = "王晓茜".getBytes("UTF-8")
     println(new String(byteArray))
@@ -20,7 +20,7 @@ object TestFuture {
     val result1 = pool.submit(new Callable[Int] {
       override def call(): Int = {
         Thread.sleep(3000)
-        return 1;
+        1
       }
     })
 
