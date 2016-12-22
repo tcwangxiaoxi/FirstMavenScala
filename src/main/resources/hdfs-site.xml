@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+
+<!-- Put site-specific property overrides in this file. -->
+
+<configuration>
+    <!-- HA集群名称，需要和core-site.xml中的保持一致 。下面会用到 -->
+    <property>
+        <name>dfs.nameservices</name>
+        <value>hadoopHa</value>
+        <description>
+            Comma-separated list of nameservices.
+        </description>
+    </property>
+
+    <!-- HA集群中，主、备节点的名称，随便填写 。下面会用到 -->
+    <property>
+          <name>dfs.ha.namenodes.hadoopHa</name>
+          <value>nn1,nn2</value>
+          <description>
+            The prefix for a given nameservice, contains a comma-separated
+            list of namenodes for a given nameservice (eg EXAMPLENAMESERVICE).
+          </description>
+    </property>
+
+    <!-- HA集群中，配置主节点的RPC地址信息 -->
+    <property>
+        <name>dfs.namenode.rpc-address.hadoopHa.nn1</name>
+        <value>hadoop1:8020</value>
+        <description>
+            RPC address for nomenode1 of hadoopHa
+        </description>
+    </property>
+
+    <!-- HA集群中，配置备用节点的RPC地址信息 -->
+    <property>
+        <name>dfs.namenode.rpc-address.hadoopHa.nn2</name>
+        <value>hadoop2:8020</value>
+        <description>
+            RPC address for nomenode2 of hadoopHa
+        </description>
+    </property>
+
+    <!-- HA集群中，配置主节点的 Web UI 地址信息 -->
+    <property>
+        <name>dfs.namenode.http-address.hadoopHa.nn1</name>
+        <value>hadoop1:50070</value>
+        <description>
+            The address and the base port where the dfs namenode1 web ui will listen on.
+        </description>
+    </property>
+
+    <!-- HA集群中，配置备用节点的 Web UI 地址信息 -->
+    <property>
+        <name>dfs.namenode.http-address.hadoopHa.nn2</name>
+        <value>hadoop2:50070</value>
+        <description>
+            The address and the base port where the dfs namenode2 web ui will listen on.
+        </description>
+    </property>
+
+    <!-- 指定NameNode的元数据在JournalNode上的存放位置，用于监控并实现主节点出现问题时，自动切换 。 -->
+    <property>
+        <name>dfs.namenode.shared.edits.dir</name>
+        <value>qjournal://hadoop2:8485;hadoop3:8485;hadoop4:8485/hadoopHa</value>
+        <description>A directory on shared storage between the multiple namenodes
+            in an HA cluster. This directory will be written by the active and read
+            by the standby in order to keep the namespaces synchronized. This directory
+            does not need to be listed in dfs.namenode.edits.dir above. It should be
+            left empty in a non-HA cluster.
+        </description>
+    </property>
+
+    <!-- journalnode的本地数据存放目录，指定一个路径就够。 -->
+    <property>
+        <name>dfs.journalnode.edits.dir</name>
+        <value>/home/wxx/hadoop/dfs/journal/</value>
+    </property>   
+
+    <!-- 开启NameNode失败自动切换 -->
+    <property>
+        <name>dfs.ha.automatic-failover.enabled</name>
+        <value>true</value>
+        <description>
+            Whether automatic failover is enabled. See the HDFS High
+            Availability documentation for details on automatic HA
+            configuration.
+        </description>
+    </property>
+
+    <!-- 配置失败自动切换实现方式 -->
+    <property>
+        <name>dfs.client.failover.proxy.provider.hadoopHa</name>
+        <value>org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider</value>
+    </property>
+
+    <!-- 配置隔离机制方法，多个机制用换行分割，即每个机制暂用一行-->
+    <property>
+        <name>dfs.ha.fencing.methods</name>
+        <value>
+            sshfence
+            shell(/bin/true)
+        </value>
+    </property>
+
+    <!-- 使用sshfence隔离机制时需要ssh免登陆 -->
+    <property>
+        <name>dfs.ha.fencing.ssh.private-key-files</name>
+        <value>/home/wxx/.ssh/id_rsa</value>
+    </property>
+
+    <!-- 配置sshfence隔离机制超时时间 -->
+    <property>
+        <name>dfs.ha.fencing.ssh.connect-timeout</name>
+        <value>30000</value>
+    </property>
+
+    <!-- 元数据节点保存的数据路径，默认路径在temp下，这样服务从启的话就会丢失文件。
+        这里配置的这个目录鼓励配置多个，这样可以提高数据的可靠性，防止磁盘损坏丢失数据。
+    -->
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file:///home/wxx/hadoop/dfs/name</value>
+        <description>Determines where on the local filesystem the DFS name node
+                should store the name table(fsimage).  If this is a comma-delimited list
+                of directories then the name table is replicated in all of the
+                directories, for redundancy. 
+        </description>
+    </property>
+
+    <!-- 数据文件节点保存的数据路径，默认路径在temp下，这样服务从启的话就会丢失文件。-->
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file:///home/wxx/hadoop/dfs/data</value>
+        <description>Determines where on the local filesystem an DFS data node
+            should store its blocks.  If this is a comma-delimited
+            list of directories, then data will be stored in all named
+            directories, typically on different devices.
+            Directories that do not exist are ignored.
+          </description>
+    </property>
+
+    <!-- 副本数，默认是 3 。 -->
+    <property>
+        <name>dfs.replication</name>
+        <value>2</value>
+    </property>
+
+    <!-- 使用启用dfs的权限控制，默认为true，启用。-->
+    <property>
+        <name>dfs.permissions</name>
+        <value>true</value>
+    </property>
+
+    <!-- 在hdfs-site.xml文件中配置。
+        Exclude_file中加入要去除的节点，通过执行refreshNodes，
+        把指定dataNode慢慢移除 
+    -->
+    <property>
+        <name>dfs.hosts.exclude</name>
+        <value>exclude_file</value>
+    </property>
+   
+    <!-- 在进行block块的均衡时，对系统网络带宽的限制，以免影响其他功能的使用，默认只有1M -->    
+    <property> 
+        <name>dfs.balance.bandwidthPerSec</name> 
+        <value>10485760</value> 
+        <description>
+            Specifies the maximum bandwidth that each datanode can utilize for the balancing purpose in                     term of the number of bytes per second.
+        </description> 
+    </property>
+</configuration>

@@ -1,0 +1,12 @@
+hadoop 10
+spark 30
+scala 20
+hadoop 40
+spark 50
+spark 70
+hadoop 80
+spark 40
+hadoop 30
+spark 20
+hadoop 60
+scala 80
