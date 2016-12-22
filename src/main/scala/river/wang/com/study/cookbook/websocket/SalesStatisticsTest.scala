@@ -28,7 +28,9 @@ object SalesStatisticsTest {
         println("onAllRecordersFinishGenerated")
       }
     })
-    new ValidateService(listenerBus).start()
+    val service = new ValidateService(listenerBus)
+    service.start()
+
 
   }
 
@@ -43,7 +45,7 @@ class SalesStatisticsMsgGenerator(val nameItems: Array[String]) extends MsgGener
   override def generateData(): String = {
     val randomIdIndex = Random.nextInt(nameItems.length)
     val randomAmount = Random.nextInt(1000)
-    println(s"name,ammount=(${nameItems(randomIdIndex)},${randomAmount})")
+    println(s"name,ammount=(${nameItems(randomIdIndex)},$randomAmount)")
     nameItems(randomIdIndex) + "," + randomAmount
 
   }
@@ -80,7 +82,7 @@ class SalesStatisticsMockSender(createRecordSize: Int, nameItems: Array[String],
     val tempFlagMap = new util.HashMap[String, Double](currentMergeInfos)
     // 根据上一次的值，计算增长趋势
     tempMergedInfos.asScala.foreach {
-      case (k, v) => {
+      case (k, v) =>
         val lastVal = lastInfos.getOrDefault(k, 0.0)
         val curVal = tempFlagMap.getOrDefault(k, 0.0)
         val changeVal = curVal - lastVal
@@ -88,7 +90,6 @@ class SalesStatisticsMockSender(createRecordSize: Int, nameItems: Array[String],
         cacheInfo(k, (curVal + v._1, if (changeVal > 0) 1 else if (changeVal < 0) -1 else 0))
         // 去掉已经处理过的数据
         tempFlagMap.remove(k)
-      }
     }
     // 遍历本次新增的信息
     if (tempFlagMap != null) {
@@ -124,16 +125,15 @@ class SalesStatisticsMockSender(createRecordSize: Int, nameItems: Array[String],
 
   def needCollectWindowInfo(): Boolean = {
     // TODO：需要根据滑动时间决定
-    return true;
+    true
   }
 
   def reduceByKeyAndWindow(): Unit = {
     historyWindowInfos.asScala.foreach {
-      case (k, v) => {
+      case (k, v) =>
         val info = v.getSummaryInfo
         println(s"""=====array:${info._2.mkString(",")}""")
-        println(s"""key：${k}；value：${info._1},${info._2.sum}""")
-      }
+        println(s"""key：$k；value：${info._1},${info._2.sum}""")
     }
   }
 
