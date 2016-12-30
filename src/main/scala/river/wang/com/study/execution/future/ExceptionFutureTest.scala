@@ -1,4 +1,4 @@
-package river.wang.com.study.future
+package river.wang.com.study.execution.future
 
 
 import java.lang.Thread.UncaughtExceptionHandler
@@ -20,7 +20,6 @@ object ExceptionFutureTest {
       }
     }, false
   ), (t) => {
-    // TODO:还是无法捕获，有时间研究
     println("发生致命错误！" + t.getMessage)
   })
 

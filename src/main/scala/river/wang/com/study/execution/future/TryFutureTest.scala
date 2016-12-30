@@ -1,4 +1,4 @@
-package river.wang.com.study.future
+package river.wang.com.study.execution.future
 
 import scala.util.{Failure, Success, Try}
 

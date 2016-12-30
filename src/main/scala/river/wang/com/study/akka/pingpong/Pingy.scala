@@ -7,7 +7,8 @@ import akka.util.Timeout
 
 import scala.concurrent.ExecutionContext.Implicits._
 import scala.concurrent.duration._
-import scala.language.postfixOps
+
+//import scala.language.postfixOps
 
 /**
   * Created by wxx on 2016/12/23.
@@ -20,10 +21,15 @@ class Pingy extends Actor {
     case pongyRef: ActorRef =>
       implicit val timeout = Timeout(2 second)
       val f = pongyRef ? "ping"
-      // TODO: 需要看书252页，了解pipeTo方法的原理
-      f.pipeTo(sender)
+      f.pipeTo(sender).foreach {
+        i =>
+          log.info("finished pipeTo")
+      }
+      log.info("finished ping")
   }
 
 
-  override def postStop(): Unit = log.info("pongy going down")
+  override def postStop(): Unit = {
+    log.info("pingy going down")
+  }
 }

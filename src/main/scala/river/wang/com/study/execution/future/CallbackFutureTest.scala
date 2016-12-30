@@ -1,4 +1,4 @@
-package river.wang.com.study.future
+package river.wang.com.study.execution.future
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -31,7 +31,7 @@ object CallbackFutureTest {
 
     urlSpec.foreach {
       lines =>
-        Thread.sleep(60*60*1000)
+        Thread.sleep(60 * 60 * 1000)
         println("foreach")
         println("result: " + find(lines, "a"))
     }
@@ -41,7 +41,7 @@ object CallbackFutureTest {
     }
 
     println("回调函数已经注册，继续处理其他任务")
-    Thread.sleep(60*60*1000)
+    Thread.sleep(60 * 60 * 1000)
 
   }
 

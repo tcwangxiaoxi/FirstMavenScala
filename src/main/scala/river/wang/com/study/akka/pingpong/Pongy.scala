@@ -14,9 +14,13 @@ class Pongy extends Actor {
   override def receive: Receive = {
     case "ping" =>
       log.info("Got a ping -- ponging back!")
+      //      Thread.sleep(3000)
       sender ! "pong"
-      context.stop(self)
+      //      context.stop(self)
+      log.info("pong finished")
   }
 
-  override def postStop(): Unit = log.info("pongy going down")
+  override def postStop(): Unit = {
+    log.info("pongy going down")
+  }
 }
